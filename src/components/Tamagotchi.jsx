@@ -2,6 +2,9 @@ import React from 'react';
 import Controls from './Controls';
 import tamagotchi from './images/tamagotchi.png'
 import Mametchi from './images/Mametchi.png'
+import DeadMametchi from './images/Mametchi-dead.png'
+import HappyMametchi from './images/Mametchi-happy.png'
+import SadMametchi from './images/Mametchi_sad.png'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Tamagotchi.css';
 
@@ -14,13 +17,34 @@ constructor(props){
     currentHunger: 20,
     currentMood: 20,
     currentCleanliness: 20,
-    status: 'alive'
+    status: 'alive',
+    image: Mametchi,
+    timer: 0
 
   }
   this.feed = this.feed.bind(this);
   this.play = this.play.bind(this);
   this.clean = this.clean.bind(this);
+  this.increaseTime = this.increaseTime.bind(this);
 }
+componentDidMount(){
+  setInterval(()=>{
+    this.increaseTime()
+    if (this.state.timer % 2) {
+      this.decreasePlay()
+    }else if (this.state.timer % 3){
+      this.decreaseFeed()
+    }else if (this.state.timer % 4) {
+      this.decreaseClean()
+    }
+  },1000)
+setInterval(()=>{
+  this.updateImage()
+  console.log('image');
+},100)
+}
+
+
 
 feed(){
   let newHunger = this.state.currentHunger
@@ -42,24 +66,33 @@ clean(){
 
 
 
-decreaseFeed(){
-  setInterval(() => {
-  let newHunger = this.state.currentHunger
-if (this.state.currentHunger < 100) {
-  newHunger += 4
-  this.setState({currentHunger: newHunger})
-
-} else {
-  let newStatus = 'dead'
-  this.setState({currentStatus: newStatus})
+updateImage(){
+    if (this.state.currentMood >= 100 || this.state.currentHunger >= 100 || this.state.currentCleanliness >= 100) {
+      this.setState({image: DeadMametchi})
+    } else if (this.state.currentMood <= 25 && this.state.currentHunger <= 25 && this.state.currentCleanliness <= 25 ) {
+      this.setState({image: HappyMametchi})
+    } else if (this.state.currentMood >= 75 || this.state.currentHunger >= 75 || this.state.currentCleanliness >= 75 ) {
+      this.setState({image: SadMametchi})
+    } else {
+      this.setState({image: Mametchi})
+    }
 }
-}, 1000);
+
+decreaseFeed(){
+  let newHunger = this.state.currentHunger
+  if (this.state.currentHunger < 100) {
+    newHunger += 4
+    this.setState({currentHunger: newHunger})
+
+  } else {
+    let newStatus = 'dead'
+    this.setState({status: newStatus})
+  }
+
 }
 
 
 decreasePlay(){
-  setInterval(() => {
-
   let newMood = this.state.currentMood
   if (this.state.currentMood < 100) {
     newMood += 10
@@ -67,24 +100,26 @@ decreasePlay(){
 
   }else {
     let newStatus = 'dead'
-    this.setState({currentStatus: newStatus})
+    this.setState({status: newStatus})
   }
-},1000);
+
 }
 
 decreaseClean(){
-  setInterval(() =>{
-
   let newCleanliness = this.state.currentCleanliness
   if (this.state.currentCleanliness < 100) {
     newCleanliness += 6
     this.setState({currentCleanliness: newCleanliness})
-
   }else {
     let newStatus = 'dead'
-    this.setState({currentStatus: newStatus})
+    this.setState({status: newStatus})
   }
-}, 1000);
+}
+
+increaseTime(){
+  let newTimer = this.state.timer
+  newTimer ++
+  this.setState({timer: newTimer})
 }
 
 
@@ -96,7 +131,7 @@ render(){
   }
 
   let characterImg = {
-    marginTop: '28%',
+    marginTop: '34%',
     height: '250px',
     width: '150px',
   }
@@ -137,6 +172,7 @@ color: '#ff1a8c',
 }
 
 let cleanButton ={
+
 borderRadius: '50%',
 backgroundColor: 'rgba(0,0,0,0)',
 borderColor: 'rgba(0,0,0,0)',
@@ -149,7 +185,7 @@ let statusBars = {
 display: 'flex',
 flexFlow: 'row wrap',
 height: "80px",
-marginTop: '5%'
+marginTop: '3.75%'
 }
 
 let foodMeter = {
@@ -204,13 +240,14 @@ let cleanStatus = {
   backgroundColor: 'white'
 
 }
-this.decreaseFeed()
-this.decreasePlay()
-this.decreaseClean()
+
+  // this.decreasePlay();
+  // this.decreaseFeed();
+  // this.updateImage();
   return (
     <div>
       <div style={characterDiv}>
-        <img style={characterImg}src={Mametchi} />
+        <img style={characterImg}src={this.state.image} />
       </div>
       <div style={statusBars}>
         <div style={foodMeter}>
