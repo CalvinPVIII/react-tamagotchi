@@ -1,5 +1,4 @@
 import React from 'react';
-import Controls from './components/Controls';
 import Header from './components/Header';
 import Tamagotchi from './components/Tamagotchi';
 import 'bootstrap/dist/css/bootstrap.min.css';
